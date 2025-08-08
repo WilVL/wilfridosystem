@@ -1,0 +1,37 @@
+Estructura general del FrontEnd
+==============================
+
+src/
+├── App.tsx                # Componente principal, define rutas y modales globales
+├── main.tsx               # Punto de entrada, monta la app y aplica el router
+├── index.css              # Estilos globales (Tailwind)
+├── components/            # Componentes reutilizables y vistas principales
+│   ├── Layout.tsx         # Estructura base: barra lateral, barra móvil, contenido
+│   ├── UserList.tsx       # Lista y gestión de usuarios del personal
+│   ├── StudentList.tsx    # Lista y gestión de alumnos
+│   ├── JustificationList.tsx # Lista y gestión de justificantes
+│   ├── EntriesExitsList.tsx  # Lista y gestión de entradas/salidas (visitas)
+│   ├── CreateProfileModal.tsx      # Modal para crear/editar usuario
+│   ├── CreateStudentModal.tsx      # Modal para crear alumno
+│   ├── CreateJustificationModal.tsx# Modal para crear justificante
+│   ├── CreateEntryModal.tsx        # Modal para crear visita/entrada/salida
+│   ├── Login.tsx         # Formulario de inicio de sesión
+│   └── ...               # Otros componentes auxiliares
+├── services/
+│   └── api.ts            # Funciones para interactuar con la API backend (login, CRUD, etc.)
+
+
+Flujo general:
+--------------
+- El usuario inicia sesión en Login.tsx.
+- Si el login es exitoso, navega al dashboard (Home) y puede acceder a los módulos según su rol.
+- Cada módulo (usuarios, alumnos, justificantes, entradas/salidas) tiene su propia lista y modales para crear/editar.
+- El Layout muestra la navegación lateral (escritorio) o inferior (móvil) y el contenido principal.
+- Los datos se obtienen y envían al backend usando servicios en services/api.ts.
+
+
+Notas:
+------
+- Los modales se usan para crear/editar entidades sin salir de la vista principal.
+- Los permisos y visibilidad de menús dependen del rol del usuario.
+- El código está comentado para facilitar la comprensión de cada parte. 
