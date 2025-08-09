@@ -54,13 +54,13 @@ const TUTORIALS: Record<string, TutorialContent> = {
     title: 'Justificantes',
     steps: [
       { img: '', text: 'En este módulo puedes registrar justificantes de ausencia para los alumnos. Haz clic en "Crear justificante" para agregar uno nuevo.' },
-      { img: '', text: 'Puedes ver el historial de justificantes, filtrarlos y editarlos si es necesario.' }
+      { img: '', text: 'Puedes ver el historial de justificantes, filtrarlos, descargarlos individualmente o por listas, además de editarlos si es necesario.' }
     ]
   },
   entradas: {
     title: 'Entradas y Salidas',
     steps: [
-      { img: '', text: 'Registra visitas, entradas y salidas de alumnos o personal. Haz clic en "Crear visita" para registrar un nuevo movimiento.' },
+      { img: '', text: 'Registra visitas, entradas y salidas de personas externas. Haz clic en "Crear visita" para registrar un nuevo movimiento.' },
       { img: '', text: 'Consulta el historial de movimientos y filtra por fecha, tipo o persona.' }
     ]
   }

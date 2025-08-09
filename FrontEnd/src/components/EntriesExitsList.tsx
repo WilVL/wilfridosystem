@@ -638,8 +638,8 @@ const EntriesExitsList: React.FC = () => {
               <div key={entry.id} className="bg-white rounded-xl shadow-sm border-2 border-gray-200 p-2 flex flex-col gap-1">
                 <div className="flex items-center gap-2 text-xs">
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${getTypeColor(entry.tipo)}`}>{getTypeIcon(entry.tipo)}{entry.tipo}</span>
-                  <span className="text-gray-800 dark:text-gray-100 font-bold">{hora}</span>
-                  <span className="text-gray-800 dark:text-gray-100 font-bold">{fecha}</span>
+                  <span className="font-bold text-black">{hora}</span>
+                  <span className="font-bold text-black">{fecha}</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900">{entry.nombre_visita}</div>
                                   <div className="flex flex-wrap gap-1 text-xs items-center">

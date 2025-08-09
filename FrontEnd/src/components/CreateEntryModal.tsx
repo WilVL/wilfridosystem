@@ -188,7 +188,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({ isOpen, onClose, on
                       className="px-4 py-2 cursor-pointer hover:bg-pink-100"
                       onClick={() => handleAlumnoSelect(a)}
                     >
-                      {a.nombre} ({a.grupo}) ({a.ingreso})
+                      {a.nombre} ({a.grupo})
                     </li>
                   ))}
                 </ul>

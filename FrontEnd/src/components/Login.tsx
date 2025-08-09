@@ -1,6 +1,6 @@
 // Componente Login: formulario de inicio de sesión para acceder al sistema.
 import React, { useState } from 'react';
-import { User } from 'lucide-react';
+import { User, Eye, EyeOff } from 'lucide-react';
 import logo from '../assets/Logo 22.jpg';
 import { login } from '../services/api';
 
@@ -13,6 +13,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,15 +64,26 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           </div>
           <div className="flex flex-col gap-2 w-full">
             <label htmlFor="contrasena" className="text-gray-900 text-base font-semibold">Contraseña</label>
-            <input
-              id="contrasena"
-              type="password"
-              value={contrasena}
-              onChange={e => setContrasena(e.target.value)}
-              className="px-3 py-2 sm:px-4 sm:py-3 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white w-full rounded-md font-sans text-gray-900 transition-all duration-150 shadow-sm placeholder-gray-400"
-              autoComplete="current-password"
-              placeholder="Introduce tu contraseña"
-            />
+            <div className="relative w-full">
+              <input
+                id="contrasena"
+                type={showPassword ? 'text' : 'password'}
+                value={contrasena}
+                onChange={e => setContrasena(e.target.value)}
+                className="px-3 py-2 sm:px-4 sm:py-3 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white w-full rounded-md font-sans text-gray-900 transition-all duration-150 shadow-sm placeholder-gray-400 pr-12"
+                autoComplete="current-password"
+                placeholder="Introduce tu contraseña"
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 focus:outline-none"
+                onClick={() => setShowPassword(v => !v)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
         </div>
         {error && <div className="text-red-400 mt-6 text-center font-semibold w-full">{error}</div>}
