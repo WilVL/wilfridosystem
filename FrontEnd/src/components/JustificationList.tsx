@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Pagination from './Pagination';
 import { Search, Plus, Edit, Download, Trash2, X, ChevronDown } from 'lucide-react';
 import { getJustificantes, createJustificante, updateJustificante, deleteJustificante, getAlumnos, getCurrentUser } from '../services/api';
 import { jsPDF } from "jspdf";
@@ -770,16 +771,24 @@ const JustificationList: React.FC = () => {
     setEditJustification(null);
   };
 
+
+  // --- PAGINACIÓN (debe ir al inicio del componente) ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, tipoFiltro, departamentoFiltro, gradoFiltro, grupoFiltro, fechaFiltro, creadoPorMi, itemsPerPage]);
+
   // Ordenar por id descendente para mostrar los más recientes primero
   const sortedJustifications = [...justifications].sort((a, b) => b.id - a.id);
 
   // Función para normalizar texto y quitar tildes/acentos
   function normalizeText(str: string) {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return str.normalize('NFD').replace(/[ -6f]/g, '').toLowerCase();
   }
 
   // En el filtrado, aplicar el filtro de tipo de justificante
-  let filteredJustifications = sortedJustifications.filter(justification => {
+  const filteredJustifications = sortedJustifications.filter(justification => {
     const searchMatch = normalizeText(justification.alumno_nombre).includes(normalizeText(searchTerm));
     if (tipoFiltro && justification.tipo_justificante !== tipoFiltro) return false;
     if (departamentoFiltro && justification.departamento !== departamentoFiltro) return false;
@@ -811,6 +820,17 @@ const JustificationList: React.FC = () => {
     }
     return searchMatch;
   });
+
+  // Filtrado adicional por creador (después del filtrado principal)
+  const filteredJustificationsForPagination = (creadoPorMi && currentUser)
+    ? filteredJustifications.filter(j => j.creado_por === currentUser.id)
+    : filteredJustifications;
+
+  const totalPages = Math.max(1, Math.ceil(filteredJustificationsForPagination.length / itemsPerPage));
+  const paginatedJustifications = filteredJustificationsForPagination.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   // Mover aquí la función para acceder a justifications
   const handlPrintTable = () => {
@@ -924,9 +944,9 @@ const JustificationList: React.FC = () => {
     setTimeout(() => setFechaFiltroGlow(false), 1000); // 1 segundo
   };
 
-  if (creadoPorMi && currentUser) {
-    filteredJustifications = filteredJustifications.filter(j => j.creado_por === currentUser.id);
-  }
+
+
+  // (Eliminado: hooks y lógica de paginación duplicados, ahora solo están al inicio del componente)
 
   return (
     <div className="p-8">
@@ -1334,7 +1354,7 @@ const JustificationList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredJustifications.map((justification, idx) => (
+                {paginatedJustifications.map((justification, idx) => (
                   <tr key={justification.id} className={`transition-colors duration-150 hover:bg-orange-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                     <td className="px-6 lg:px-2 xl:px-4 py-4 lg:py-2 xl:py-3 border-r border-gray-200 text-base lg:text-sm xl:text-base">{justification.id}</td>
                     <td className="px-6 lg:px-2 xl:px-4 py-4 lg:py-2 xl:py-3 border-r border-gray-200">
@@ -1369,7 +1389,7 @@ const JustificationList: React.FC = () => {
 
         {/* Tarjetas de justificantes - solo móvil/intermedio */}
         <div className="space-y-2 lg:hidden">
-          {filteredJustifications.map((justification) => (
+          {paginatedJustifications.map((justification) => (
             <div key={justification.id} className="bg-white rounded-xl shadow-sm border-2 border-gray-200 p-2 flex flex-col gap-1 relative">
               {/* Días en la esquina superior derecha */}
               <span className="absolute top-2 right-2 inline-flex px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-xs font-bold">{justification.tiempo_dias} días</span>
@@ -1407,6 +1427,20 @@ const JustificationList: React.FC = () => {
           ))}
         </div>
       </div>
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredJustificationsForPagination.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+        </div>
+      )}
+
       <JustificationModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

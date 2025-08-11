@@ -1,6 +1,7 @@
 // Componente EntriesExitsList: muestra y gestiona la lista de registros de entradas y salidas (visitas).
 // Incluye funciones para crear, editar y eliminar registros.
 import React, { useState, useEffect, useRef } from 'react';
+import Pagination from './Pagination';
 import { Search, Plus, Edit, Trash2, ArrowRight, ArrowLeft, ChevronDown } from 'lucide-react';
 import { getEntradasSalidas, createEntradaSalida, updateEntradaSalida, deleteEntradaSalida, getAlumnos } from '../services/api';
 import CreateEntryModal from './CreateEntryModal';
@@ -239,6 +240,20 @@ const EntriesExitsList: React.FC = () => {
     }
     return searchMatch;
   });
+
+  // --- PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const totalPages = Math.max(1, Math.ceil(filteredEntries.length / itemsPerPage));
+  // Resetear página al cambiar filtros o búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filtros, fechaPreset, alumnosFiltro, itemsPerPage]);
+  // Entradas paginadas
+  const paginatedEntries = filteredEntries.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const getTypeColor = (type: string) => {
     return type === 'Entrada'
@@ -567,7 +582,7 @@ const EntriesExitsList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredEntries.map((entry, idx) => {
+                {paginatedEntries.map((entry, idx) => {
                   // Separar fecha y hora
                   let fecha = '', hora = '';
                   if (entry.fecha_registro) {
@@ -624,7 +639,7 @@ const EntriesExitsList: React.FC = () => {
 
         {/* Tarjetas de entradas/salidas - solo móvil */}
         <div className="space-y-2 md:hidden">
-          {filteredEntries.map((entry) => {
+          {paginatedEntries.map((entry) => {
             let fecha = '', hora = '';
             if (entry.fecha_registro) {
               const [f, h] = entry.fecha_registro.split(' ');
@@ -671,6 +686,20 @@ const EntriesExitsList: React.FC = () => {
             );
           })}
         </div>
+
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredEntries.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
+          </div>
+        )}
 
         {/* Modal para crear/editar */}
         <CreateEntryModal

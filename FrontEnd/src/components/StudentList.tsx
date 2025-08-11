@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Pagination from './Pagination';
 import { Search, Plus, Edit, Trash2, User as UserIcon, Users as UsersIcon } from 'lucide-react';
 import { getAlumnos, createAlumno, updateAlumno, deleteAlumno, API_URL, getAuthHeaders } from '../services/api';
 
@@ -481,6 +482,20 @@ const StudentList: React.FC = () => {
     if (turnoFiltro && student.turno !== turnoFiltro) return false;
     return searchMatch;
   });
+
+  // --- PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage));
+  // Resetear página al cambiar filtros o búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, gradoFiltro, grupoFiltro, turnoFiltro, itemsPerPage]);
+  // Alumnos paginados
+  const paginatedStudents = filteredStudents.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   // Cuando se activa el modo eliminar grupo, selecciona todos los IDs filtrados
   useEffect(() => {
@@ -1065,7 +1080,7 @@ const StudentList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 divide-gray-200">
-                {filteredStudents.map((student, idx) => (
+                {paginatedStudents.map((student, idx) => (
                   <tr
                     key={student.id}
                     className={`transition-colors duration-150 hover:bg-orange-50
@@ -1133,7 +1148,7 @@ const StudentList: React.FC = () => {
 
         {/* Tarjetas de alumnos - solo móvil */}
         <div className="space-y-1 md:hidden">
-          {filteredStudents.map((student) => {
+          {paginatedStudents.map((student) => {
             const isSelected = isDeleteGroupMode && selectedToDelete.includes(student.id);
             return (
               <div
@@ -1193,6 +1208,20 @@ const StudentList: React.FC = () => {
           })}
         </div>
       </div>
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6 mb-6">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredStudents.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+        </div>
+      )}
+
       <StudentModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
